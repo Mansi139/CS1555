@@ -160,5 +160,11 @@ create or replace trigger a
 
 	end;
     /
+    
+    --conditional investment 
+    --create or replace trigger conditionalInvestment
+    --after insert or update on
+    --for each row 
+    --begin
 	
 commit;
