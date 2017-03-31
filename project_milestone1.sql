@@ -1,5 +1,5 @@
---Mansi Thakkar
----project
+--Mansi Thakkar, Mike Smith 
+---BetterFuture
 
 drop table MUTUALFUND cascade constraints;
 
@@ -110,8 +110,55 @@ AFTER UPDATE
 ON TRXLOG
 FOR EACH ROW
 BEGIN
-UPDATE CUSTOMER
-SET balance = :NEW.num_shares * :NEW.price
+	UPDATE CUSTOMER
+	SET balance = :NEW.num_shares * :NEW.price
 WHERE login = :NEW.login;
 END;
 /
+
+create or replace procedure myproc(alc int, blc float)  is
+	percentage float;
+	symbol varchar2(20);
+	price float;
+	cursor get_percentage is
+		select percentage,symbol from PREFERS
+		where allocation_no = alc ;
+		
+	begin
+		open get_percentage;
+		loop
+			fetch get_percentage into percentage,symbol;		
+			exit when get_percentage%notfound;
+		
+			dbms_output.put_line(percentage);
+		end loop;
+		close get_percentage;
+	end;
+	/
+	
+	
+create or replace trigger a
+    after insert or update on TRXLOG      
+    for each row
+    when (new.action = 'deposit')
+    declare no int;
+    	     mybalance float;
+    begin
+      	select allocation_no
+	into no
+	from allocation a
+	where a.login = :new.login;	
+	dbms_output.put_line('allocation no: ' || no);
+
+	select balance 
+	into mybalance
+	from customer c
+	where c.login = :new.login;
+	dbms_output.put_line('balance of customer: ' || mybalance);	
+    	
+	myproc(no,mybalance);
+
+	end;
+    /
+	
+commit;
