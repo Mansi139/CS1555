@@ -1,12 +1,7 @@
 /*
- Written by Thao N. Pham.
- Updated by: Lory Al Moakar, Roxana Georghiu, Nick R. Katsipoulakis, Xiaoyu Ge
- Purpose: Demo JDBC for CS1555 Class
- 
- IMPORTANT (otherwise, your code may not compile)
- Same as using sqlplus, you NEED TO SET oracle environment variables by
- sourcing bash.env or tcsh.env
+ Written by Manasi Thakkar
  */
+
 import java.util.*;
 import java.sql.*;  //import the file containing definitions for the parts
 import java.text.ParseException;
@@ -41,6 +36,11 @@ public class CS1555_Project {
         }
         
     }
+    public CS1555_Project(String login, String s1, String s2){
+        searchMutualFund(login,s1,s2);
+        
+    }
+    
     
     /////////////////EXAMPLE 0 //////////////////////////
     public void browsingMutualFund(String in, int choice) {
@@ -52,10 +52,10 @@ public class CS1555_Project {
             /**
              /**
              1)Customers are allowed to look at the list of all mutual funds
-               String selectQuery = "select * from MUTUALFUND";
+             String selectQuery = "select * from MUTUALFUND";
              2)Or those in a category of their choice;
-                allocation join prefers using allocation_no
-                "select symbol from allocation join prefers on allocation_no"
+             allocation join prefers using allocation_no
+             "select symbol from allocation join prefers on allocation_no"
              3)they can also ask for funds to be sorted on the highest price for a given date, or alphabetically by fund name.
              "select symbol from closingPrice order by price DESC"
              "selecy symbol from closingPrice order by symbol ASC?;
@@ -71,13 +71,13 @@ public class CS1555_Project {
              **/
             
             if(choice == 0){
-            statement = connection.createStatement(); //create an instance
-            String selectQuery = "select * from MUTUALFUND"; //sample query
-            resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
-            
+                statement = connection.createStatement(); //create an instance
+                String selectQuery = "select * from MUTUALFUND"; //sample query
+                resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
+                
                 System.out.println("size: " + resultSet.getFetchSize());
                 while (resultSet.next()){
-                   
+                    
                     System.out.println("Record " + counter + ": " +
                                        resultSet.getString(1) + ", " +
                                        resultSet.getString(2) + ", " +
@@ -96,7 +96,7 @@ public class CS1555_Project {
                 statement = connection.createStatement(); //create an instance
                 System.out.println("\n");
                 String selectQuery = " select login, symbol,percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike'"; //sample query
-              
+                
                 resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
                 
                 
@@ -108,10 +108,10 @@ public class CS1555_Project {
                                        resultSet.getFloat(3)); //since type date, getDate.
                     counter++;
                 }
-
+                
                 System.out.println("\n");
-                System.out.println("    0. Sort it on the highest price for a given date");
-                System.out.println("    1. Sort it alphabetically by fund name");
+                System.out.println("        0. Sort it on the highest price for a given date");
+                System.out.println("        1. Sort it alphabetically by fund name");
                 
                 Scanner keyboard = new Scanner(System.in);
                 int subChoice = keyboard.nextInt();
@@ -122,7 +122,7 @@ public class CS1555_Project {
                     
                     //TODO:2 change mike here as well
                     //TODO:3 closing price is the price we want?
-                   
+                    
                     System.out.println("\n");
                     String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.price DESC";
                     
@@ -146,7 +146,7 @@ public class CS1555_Project {
                     
                     String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.symbol ASC";
                     
-                   
+                    
                     resultSet = statement.executeQuery(sortQuery); //run the query on the DB table
                     
                     while (resultSet.next()){
@@ -165,7 +165,7 @@ public class CS1555_Project {
                 
             }
             
-             resultSet.close();
+            resultSet.close();
         }
         catch(SQLException Ex) {
             System.out.println("Error running the sample queries.  Machine Error: " +
@@ -183,30 +183,91 @@ public class CS1555_Project {
             }
         }
     }
-    
-    public static int showSubMenu(int n){
-        Scanner keyboard = new Scanner(System.in);
-        int res = 0;
+    public void searchMutualFund(String in, String s1, String s2){
         
-        if(n == 0){
-            System.out.println("0. Look at list of all mutual funds");
-            System.out.println("1. List mutual funds in a category of your choice");
+        try{
+            statement = connection.createStatement(); //create an instance
+            System.out.println("\n");
             
-            res = keyboard.nextInt();
-        }else if(n == 1){
-        }else if(n == 2){
-        }else if(n == 3){
-        }else if(n == 4){
-        }else if(n == 5){
-        }else if(n == 6){
-        }else if(n == 7){
-        }else{
-            System.out.println("Invalid choice!");
+            //TODO: 4 how to set it to variable = s1
+            String searchQuery = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%market%'"; //sample query
+            
+            resultSet = statement.executeQuery(searchQuery); //run the query on the DB table
+            
+            
+            while (resultSet.next()){
+                
+                System.out.println(
+                                   resultSet.getString(1) + ", " +
+                                   resultSet.getString(2) + ", " +
+                                   resultSet.getString(3) + ", " +
+                                   resultSet.getString(4) + ", " +
+                                   resultSet.getDate(5)); //since type date, getDate.
+            }
+            
+            
+            //TODO: 4 how to set it to variable = s2
+            String searchQuery2 = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%real%'"; //sample query
+            
+            resultSet = statement.executeQuery(searchQuery2); //run the query on the DB table
+            
+            
+            while (resultSet.next()){
+                
+                System.out.println(
+                                   resultSet.getString(1) + ", " +
+                                   resultSet.getString(2) + ", " +
+                                   resultSet.getString(3) + ", " +
+                                   resultSet.getString(4) + ", " +
+                                   resultSet.getDate(5)); //since type date, getDate.
+            }
+            resultSet.close();
+            System.out.println("\n");
+        }
+        catch(SQLException Ex) {
+            System.out.println("Error running the sample queries.  Machine Error: " +
+                               Ex.toString());
+        } /**catch (ParseException e) {
+           System.out.println("Error parsing the date. Machine Error: " +
+           e.toString());
+           }*/
+        finally{
+            try {
+                if (statement != null) statement.close();
+                if (prepStatement != null) prepStatement.close();
+            } catch (SQLException e) {
+                System.out.println("Cannot close Statement. Machine error: "+e.toString());
+            }
         }
         
-        return res;
     }
     
+    
+    /**   public static int showSubMenu(int n){
+     Scanner keyboard = new Scanner(System.in);
+     int res = 0;
+     
+     if(n == 0){
+     System.out.println("0. Look at list of all mutual funds");
+     System.out.println("1. List mutual funds in a category of your choice");
+     
+     res = keyboard.nextInt();
+     }else if(n == 1){
+     
+     System.out.println("");
+     }else if(n == 2){
+     }else if(n == 3){
+     }else if(n == 4){
+     }else if(n == 5){
+     }else if(n == 6){
+     }else if(n == 7){
+     }else{
+     System.out.println("Invalid choice!");
+     }
+     
+     return res;
+     }
+     */
     
     public static void main(String args[]) throws SQLException
     {
@@ -215,7 +276,7 @@ public class CS1555_Project {
         System.out.println("Press 0 for administrator and 1 for customers");
         int mainChoice = keyboard.nextInt();
         int choice = 0, c = 0;
-        String login = "";
+        String login = "",  temp1 = "",  temp2 = "";
         
         if(mainChoice == 0){
             //show administrator login
@@ -237,7 +298,39 @@ public class CS1555_Project {
             
             c = keyboard.nextInt();
             
-            choice = showSubMenu(c);
+            
+            if(c == 0){
+                System.out.println("    0. Look at list of all mutual funds");
+                System.out.println("    1. List mutual funds in a category of your choice");
+                
+                choice = keyboard.nextInt();
+                
+                
+            }else if(c == 1){
+                
+                System.out.println("    Specify up to two keywords to search mutual fund: ");
+                keyboard.nextLine();
+                String s= keyboard.nextLine();
+                
+                String[] a = s.split(" ");
+                temp1 = a[0];
+                temp2 = a[1];
+                System.out.println("1st: " + a[0]);
+                System.out.println("2nd: " + a[1]);
+                
+                
+            }else if(c == 2){
+            }else if(c == 3){
+            }else if(c == 4){
+            }else if(c == 5){
+            }else if(c == 6){
+            }else if(c == 7){
+            }else{
+                System.out.println("Invalid choice!");
+            }
+            
+            
+            //choice = showSubMenu(c);
             
         }else{
             System.out.println("Invalid option");
@@ -247,7 +340,7 @@ public class CS1555_Project {
          these, you either put the DB stuff in a try block or have your function
          throw the Exceptions and handle them later.  For this demo I will use the
          try blocks */
-      
+        
         String username, password;
         username = "mat185"; //This is your username in oracle
         password = "3912590"; //This is your password in oracle
@@ -264,7 +357,14 @@ public class CS1555_Project {
             //create a connection to DB on class3.cs.pitt.edu
             connection = DriverManager.getConnection(url, username, password);
             
-            CS1555_Project demo = new CS1555_Project(login,choice);
+            if(c == 0 ){
+                CS1555_Project demo = new CS1555_Project(login,choice);
+            }else if(c ==1 ){
+                CS1555_Project demo = new CS1555_Project(login,temp1, temp2);
+                
+            }else{
+                System.out.println("Invalid!!!");
+            }
             connection.close();
             
         }
