@@ -43,7 +43,7 @@ public class CS1555_Project {
     }
     
     /////////////////EXAMPLE 0 //////////////////////////
-    public void browsingMutualFund(String login, int choice) {
+    public void browsingMutualFund(String in, int choice) {
         
         int counter = 1;
         /*We will now perform a simple query to the database, asking for all the
@@ -86,6 +86,83 @@ public class CS1555_Project {
                                        resultSet.getDate(5)); //since type date, getDate.
                     counter++;
                 }
+            }else if(choice == 1){
+                
+                /** first get allocation_no for my login using ALLOCATION
+                 then for that login get symbol using PREFERS
+                 */
+                //TODO1: how to check string against variable.
+                
+                statement = connection.createStatement(); //create an instance
+                System.out.println("\n");
+                String selectQuery = " select login, symbol,percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike'"; //sample query
+              
+                resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
+                
+                
+                while (resultSet.next()){
+                    
+                    System.out.println(
+                                       resultSet.getString(1) + ", " +
+                                       resultSet.getString(2) + ", " +
+                                       resultSet.getFloat(3)); //since type date, getDate.
+                    counter++;
+                }
+
+                System.out.println("\n");
+                System.out.println("    0. Sort it on the highest price for a given date");
+                System.out.println("    1. Sort it alphabetically by fund name");
+                
+                Scanner keyboard = new Scanner(System.in);
+                int subChoice = keyboard.nextInt();
+                
+                
+                
+                if(subChoice == 0){
+                    
+                    //TODO:2 change mike here as well
+                    //TODO:3 closing price is the price we want?
+                   
+                    System.out.println("\n");
+                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.price DESC";
+                    
+                    resultSet = statement.executeQuery(sortQuery); //run the query on the DB table
+                    
+                    while (resultSet.next()){
+                        
+                        System.out.println(
+                                           resultSet.getString(1) + ", " +
+                                           resultSet.getString(2) + ", " +
+                                           resultSet.getFloat(3) + ", " +
+                                           resultSet.getFloat(4)); //since type date, getDate.
+                        counter++;
+                    }
+                    System.out.println("\n");
+                    
+                }else if( subChoice == 1){
+                    //sort it alphabetically by fund name
+                    
+                    System.out.println("\n");
+                    
+                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.symbol ASC";
+                    
+                   
+                    resultSet = statement.executeQuery(sortQuery); //run the query on the DB table
+                    
+                    while (resultSet.next()){
+                        
+                        System.out.println(resultSet.getString(1) + ", " +
+                                           resultSet.getString(2) + ", " +
+                                           resultSet.getFloat(3) + ", " +
+                                           resultSet.getFloat(4)); //since type date, getDate.
+                        counter++;
+                    }
+                    System.out.println("\n");
+                    
+                }else{
+                    System.out.println("Invalid option");
+                }
+                
             }
             
              resultSet.close();
@@ -113,6 +190,7 @@ public class CS1555_Project {
         
         if(n == 0){
             System.out.println("0. Look at list of all mutual funds");
+            System.out.println("1. List mutual funds in a category of your choice");
             
             res = keyboard.nextInt();
         }else if(n == 1){
