@@ -21,7 +21,7 @@ create table CLOSINGPRICE(
 	constraint pk_closingprice primary key(symbol,p_date),
 	constraint fk_closingprice foreign key(symbol) references mutualfund(symbol)
 	);
-	
+COMMIT;	
 
 drop table CUSTOMER cascade constraints;
 
@@ -34,6 +34,7 @@ create table CUSTOMER(
 	balance float,
 	constraint pk_customer primary key(login)
 	);
+COMMIT;	
 
 drop table ADMINISTRATOR cascade constraints;
 
@@ -45,6 +46,7 @@ create table ADMINISTRATOR(
 	password varchar2(10),
 	constraint pk_administrator primary key(login)
 	);
+COMMIT;	
 
 drop table ALLOCATION cascade constraints;
 
@@ -54,6 +56,7 @@ create table ALLOCATION(
 	p_date DATE,
 	constraint pk_allocation primary key(allocation_no)
 	);
+COMMIT;	
 
 drop table PREFERS cascade constraints;
 
@@ -65,7 +68,7 @@ create table PREFERS(
 	constraint fk_allocation_no foreign key(allocation_no) references ALLOCATION(allocation_no),
 	constraint fk_symbol foreign key(symbol) references MUTUALFUND(symbol)
 	);
-
+COMMIT;	
 
 drop table TRXLOG cascade constraints;
 
@@ -83,6 +86,7 @@ create table TRXLOG(
 	constraint fk_TRXLOG_login foreign key (login) references CUSTOMER(login),
 	constraint fk_TRXLOG_symbol foreign key (symbol) references MUTUALFUND(symbol)
 	);
+COMMIT;	
 
 drop table OWNS cascade constraints;
 
@@ -94,7 +98,7 @@ create table OWNS(
 	constraint fk_OWNS_login foreign key(login) references CUSTOMER(login),
 	constraint fk_OWNS_symbol foreign key(symbol) references MUTUALFUND(symbol)
 	);
-
+COMMIT;	
 
 drop table MUTUALDATE cascade constraints;
 
@@ -159,12 +163,61 @@ create or replace trigger a
 	myproc(no,mybalance);
 
 	end;
-    /
-    
-    --conditional investment 
-    --create or replace trigger conditionalInvestment
-    --after insert or update on
-    --for each row 
-    --begin
-	
+    /	
+commit;
+
+
+insert into MutualDate values (TO_DATE('04-04-2014','MM-DD-YYYY'));
+
+insert into Customer values ('mike', 'mike','  mike@betterfuture.com','1st street','pwd',750);
+insert into Customer values ('mary', 'Mary','  mary@betterfuture.com','2st street','pwd',0);
+insert into Customer values ('nan', 'nan','  nan@betterfuture.com','3st street','pwd',1);
+insert into Customer values ('helo', 'helo','  helo@betterfuture.com','4st street','pwd',2);
+
+insert into Administrator values('admin','Administrator','admin@betterfuture.com','5th Ave, Pitt','root');
+
+--CHECK 
+insert into MutualFund values ('MM','money-market','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('RE',' real-estate ','  real estate ','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('STB',' short-term-bonds ','short term bondst','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('LTB',' long-term-bonds','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('BBS','balance-bonds-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('SRBC','social-respons-bonds-stock','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('GS',' general-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('AS',' aggressive-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into MutualFund values ('IMS',' international-markets-stock','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+
+insert into Owns values('mike','RE',50);
+
+insert into TRXLOG values(0,'mike',NULL,TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+insert into TRXLOG values(1,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+insert into TRXLOG values(2,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+insert into TRXLOG values(3,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+
+insert into Allocation values (0,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into Allocation values (1,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into Allocation values (2,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+
+insert into Prefers values (0,'MM',0.5);
+insert into Prefers values (0,'RE',0.5);
+insert into Prefers values (1,'STB',0.2);
+insert into Prefers values (1,'LTB',0.4);
+insert into Prefers values (1,'BBS',0.4);
+insert into Prefers values (2,'GS',0.3);
+insert into Prefers values (2,'AS',0.3);
+insert into Prefers values (2,'IMS',0.4);
+
+insert into ClosingPrice values ('MM',10,TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('MM',11,TO_DATE('05-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('MM',12,TO_DATE('06-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('MM',15,TO_DATE('07-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('MM',14,TO_DATE('08-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('MM',15,TO_DATE('09-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',16,TO_DATE('10-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',10,TO_DATE('11-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',12,TO_DATE('12-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',15,TO_DATE('01-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',10,TO_DATE('02-04-2014','MM-DD-YYYY'));
+insert into ClosingPrice values ('RE',9,TO_DATE('03-04-2014','MM-DD-YYYY'));
+
 commit;
