@@ -481,7 +481,7 @@ public class CS1555_Project {
             int saveNum = 0;
             
             statement = connection.createStatement(); //create an instance
-            System.out.println("user: " + in);
+            //System.out.println("user: " + in);
             
             String selectQuery = " select * from allocation where login = '"+ in + "' order by p_date desc fetch first 1 row only"; //sample query
             resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
@@ -553,7 +553,7 @@ public class CS1555_Project {
                 
                 statement = connection.createStatement(); //create an instance
                 System.out.println("\n");
-                String selectQuery = " select login, symbol,percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike'"; //sample query
+                String selectQuery = " select login, symbol,percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = '" + in +"'"; //sample query
                 
                 resultSet = statement.executeQuery(selectQuery); //run the query on the DB table
                 
@@ -582,7 +582,7 @@ public class CS1555_Project {
                     //TODO:3 closing price is the price we want?
                     
                     System.out.println("\n");
-                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.price DESC";
+                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = '" + in +"') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.price DESC";
                     
                     resultSet = statement.executeQuery(sortQuery); //run the query on the DB table
                     
@@ -602,7 +602,7 @@ public class CS1555_Project {
                     
                     System.out.println("\n");
                     
-                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = 'mike') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.symbol ASC";
+                    String sortQuery = " select login,sy,price,percentage  from (select login, symbol as sy, percentage from allocation a join prefers p on a.allocation_no = p.allocation_no where a.login = '" + in + "') np INNER JOIN closingPrice CP on np.sy=cp.symbol order by cp.symbol ASC";
                     
                     
                     resultSet = statement.executeQuery(sortQuery); //run the query on the DB table
@@ -648,7 +648,7 @@ public class CS1555_Project {
             System.out.println("\n");
             
             //TODO: 4 how to set it to variable = s1
-            String searchQuery = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%market%'"; //sample query
+            String searchQuery = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%" + s1 + "%'"; //sample query
             
             resultSet = statement.executeQuery(searchQuery); //run the query on the DB table
             
@@ -665,7 +665,7 @@ public class CS1555_Project {
             
             
             //TODO: 4 how to set it to variable = s2
-            String searchQuery2 = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%real%'"; //sample query
+            String searchQuery2 = "select name, symbol,description, category,c_date from mutualFund where description LIKE '%" + s2 + "%'"; //sample query
             
             resultSet = statement.executeQuery(searchQuery2); //run the query on the DB table
             
