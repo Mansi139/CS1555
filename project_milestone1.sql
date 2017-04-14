@@ -144,7 +144,7 @@ commit;
 
 --by providing its symbol and the amount to be used in the trad
 --100 in balance, i specify 50, each cost 4; numOfShare = 50/4 = 12; newbalance = 100 - (12*4) = 100-48 = 52
-create or replace procedure buyShare( comingLogin in varchar2, mutualFund in varchar2, amountToBeUsed in varchar2)
+create or replace procedure buyShare2( comingLogin in varchar2, mutualFund in varchar2, amountToBeUsed in varchar2)
 is
 mybalance number;
 mySharePrice number;
@@ -165,13 +165,14 @@ end;
 /	
 commit;
 
-create or replace view FUNDSBOUGHT as
-select symbol, category, num_shares, t_date
-from TRXLOG
-NATURAL JOIN
-MUTUALFUND
-where action = 'buy';
+/**create or replace procedure conditionalInvestment(comingLogIn in varchar2, action in varchar2)
+is
 
+end;
+/
+*/
+/** procedure buyShare
+*/
 create or replace procedure myproc(alc int, blc float)  is
 	percentage float;
 	symbol varchar2(20);
@@ -183,7 +184,8 @@ create or replace procedure myproc(alc int, blc float)  is
 	begin
 		open get_percentage;
 		loop
-			fetch get_percentage into percentage,symbol;		
+			fetch get_percentage into percentage,symbol;	
+				
 			exit when get_percentage%notfound;
 		
 			dbms_output.put_line(percentage);
@@ -192,8 +194,26 @@ create or replace procedure myproc(alc int, blc float)  is
 	end;
 	/
 	
+/**create or replace trigger conditional
+	after insert or update on TRXLOG
+	for each row
+	declare mydate date;
+	declare action a;
+begin
+	select p_date
+	into mydate
+	from allocation a
+	where a.login = :new.login;
+	dbms_output.put_line('date: ' || mydate);
 	
-create or replace trigger a
+	conditionalInvestment(:new.login,a);
+	
+	
+end;
+/
+commit; */
+	
+create or replace trigger investing
     after insert or update on TRXLOG      
     for each row
     when (new.action = 'deposit')
@@ -211,7 +231,10 @@ create or replace trigger a
 	from customer c
 	where c.login = :new.login;
 	dbms_output.put_line('balance of customer: ' || mybalance);	
+	
+
     	
+    	/**buyShare( :new.login, mutualFund in varchar2, numberOfShares in varchar2) */
 	myproc(no,mybalance);
 
 	end;
@@ -246,9 +269,9 @@ insert into TRXLOG values(1,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy'
 insert into TRXLOG values(2,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
 insert into TRXLOG values(3,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
 
-insert into Allocation values (0,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
-insert into Allocation values (1,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
-insert into Allocation values (2,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+insert into Allocation values (0,'mike',TO_DATE('03-28-2014','MM-DD-YYYY'));
+insert into Allocation values (1,'mary',TO_DATE('03-29-2014','MM-DD-YYYY'));
+insert into Allocation values (2,'mike',TO_DATE('03-03-2014','MM-DD-YYYY'));
 
 insert into Prefers values (0,'MM',0.5);
 insert into Prefers values (0,'RE',0.5);
