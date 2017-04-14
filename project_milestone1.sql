@@ -254,7 +254,7 @@ insert into Customer values ('mary', 'Mary','  mary@betterfuture.com','2st stree
 insert into Customer values ('nan', 'nan','  nan@betterfuture.com','3st street','pwd',1);
 insert into Customer values ('helo', 'helo','  helo@betterfuture.com','4st street','pwd',2);
 
-insert into Administrator values('admin','Administrator','admin@betterfuture.com','5th Ave, Pitt','root');
+insert into ADMINISTRATOR values('admin','Administrator','admin@betterfuture.com','5th Ave, Pitt','root');
 
 --CHECK 
 insert into MutualFund values ('MM','money-market','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
