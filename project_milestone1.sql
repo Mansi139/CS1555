@@ -212,6 +212,11 @@ begin
 end;
 /
 commit; */
+
+create or replace view FUNDSBOUGHT as 
+select symbol, category, num_shares, t_date
+from TRXLOG natural join MUTUALFUND
+where action = 'buy';
 	
 create or replace trigger investing
     after insert or update on TRXLOG      
