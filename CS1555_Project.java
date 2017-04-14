@@ -369,21 +369,25 @@ public class CS1555_Project {
     
     
     public void buyShare(String in){
-        System.out.println("helloooooo111");
+        //System.out.println("helloooooo111");
         
         Scanner keyboard = new Scanner(System.in);
+        
         
         System.out.println("    0. Provide mutualfund Symbol and number of shares");
         System.out.println("    1. Provide mutualfund symbol and amount");
         
         int whichOne = keyboard.nextInt();
+        System.out.println("which one: " + whichOne);
+
+        keyboard.nextLine();
         
         System.out.println("Enter mutual fund: ");
-        keyboard.next();
+       
         String mutualFund = keyboard.nextLine();
+        System.out.println("Mutual fund: " + mutualFund);
         try{
             if(whichOne == 0){
-                
                 
                 System.out.println("Enter number of shares: ");
                 int numShares = keyboard.nextInt();
@@ -398,6 +402,19 @@ public class CS1555_Project {
                 
                 
             }else if(whichOne == 1){
+                
+                System.out.println("Enter amount to be used in the transaction: ");
+                float amountUsed = keyboard.nextInt();
+                
+                CallableStatement cStmt = connection.prepareCall("{call buyShare2(?, ?, ?)}");
+                
+                cStmt.setString(1,in );
+                cStmt.setString(2,mutualFund );
+                cStmt.setFloat(3,amountUsed );
+                
+                cStmt.executeUpdate();
+
+                
             }else{
                 System.out.println("Invalid option");
             }
@@ -858,7 +875,7 @@ public class CS1555_Project {
             
             if(adminNEW == 0){
                 if(c == 0 || c == 6 || c == 5 || c == 7 || c == 4){
-                    System.out.println("c: " + c);
+                    //System.out.println("c: " + c);
                     CS1555_Project demo = new CS1555_Project(login,choice);
                 }else if(c ==1 ){
                     CS1555_Project demo = new CS1555_Project(login,temp1, temp2);
@@ -868,7 +885,6 @@ public class CS1555_Project {
                     System.out.println("Invalid!!!");
                 }
             }else if (adminNEW == 1){
-                System.out.println("hereeee " + c);
                 
                 if(c == 0 ){
                     CS1555_Project demo = new CS1555_Project(keyboard,login,choice);
