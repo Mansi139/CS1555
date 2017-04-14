@@ -113,12 +113,57 @@ CREATE OR REPLACE TRIGGER SellShare
 AFTER UPDATE
 ON TRXLOG
 FOR EACH ROW
+ when (new.action = 'sell')
 BEGIN
 	UPDATE CUSTOMER
-	SET balance = :NEW.num_shares * :NEW.price
+	SET balance = balance - :NEW.num_shares * :NEW.price
 WHERE login = :NEW.login;
 END;
 /
+
+--given customer login, mutual fund Symbol and number of shares , buy share
+--1) find balance, check balance >= number of shares*price
+--2) buy whole number of shares, get totalBalance/price of share = number of share we can buy
+--3) update balance, update OWNS shares
+create or replace procedure buyShare( comingLogin in varchar2, mutualFund in varchar2, numberOfShares in varchar2)
+is
+mybalance number;
+mySharePrice number;
+begin
+select balance into mybalance from customer where login=comingLogin;
+select price into mySharePrice from closingPrice where symbol=mutualFund;
+if (mybalance >= (mySharePrice)*(numberOfShares)) then
+	update OWNS set shares = shares + numberOfShares where login = comingLogin;
+	update customer set balance = balance - (mySharePrice)*(numberOfShares) where login = comingLogin;
+else
+	dbms_output.put_line('balance is too low');
+end if;
+end;
+/	
+commit;
+
+--by providing its symbol and the amount to be used in the trad
+--100 in balance, i specify 50, each cost 4; numOfShare = 50/4 = 12; newbalance = 100 - (12*4) = 100-48 = 52
+create or replace procedure buyShare( comingLogin in varchar2, mutualFund in varchar2, amountToBeUsed in varchar2)
+is
+mybalance number;
+mySharePrice number;
+numShare number;
+begin
+select balance into mybalance from customer where login=comingLogin;
+select price into mySharePrice from closingPrice where symbol=mutualFund;
+if(mybalance > amountToBeUsed) then
+if (mybalance >= (mySharePrice)*(amountToBeUsed/mySharePrice)) then
+	update OWNS set shares = shares + (mybalance/mySharePrice) where login = comingLogin;
+	update customer set balance = balance - (mySharePrice)*(amountToBeUsed/mySharePrice) where login = comingLogin;
+else
+	dbms_output.put_line('balance is too low');
+end if;
+end if;
+
+end;
+/	
+commit;
 
 create or replace procedure myproc(alc int, blc float)  is
 	percentage float;
