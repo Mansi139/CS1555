@@ -18,46 +18,57 @@ public class CS1555_Project {
     
     public CS1555_Project(Scanner keyboard, String login, int example_no) throws SQLException, ParseException {
         
-        switch ( example_no) {
-            case 0:
-            case 1:
-                browsingMutualFund(login, example_no);
-                break;
-            case 8:
-                newCust(keyboard);
-                break;
-            case 9:
-                updateShareQuotes(keyboard);
-                break;
-            case 10:
-                addMutualFund(keyboard);
-                break;
-            case 11:
-                updateTimeDate(keyboard);
-                break;
-            case 12:
-                stats(keyboard);
-                break;
-                
-                
-                
-            default:
-                System.out.println("Example not found for your entry: " + example_no);
-                try {
-                    connection.close();
-                }
-                catch(Exception Ex)  {
-                    System.out.println("Error connecting to database.  Machine Error: " +
-                                       Ex.toString());
-                }
-                break;
+        while(true) {
+            switch (example_no) {
+                case 0:
+                case 1:
+                    browsingMutualFund(login, example_no);
+                    break;
+                    
+                case 8:
+                    newCust(keyboard);
+                    break;
+                case 9:
+                    updateShareQuotes(keyboard);
+                    break;
+                case 10:
+                    addMutualFund(keyboard);
+                    break;
+                case 11:
+                    updateTimeDate(keyboard);
+                    break;
+                case 12:
+                    stats(keyboard);
+                    break;
+                    
+                    
+                default:
+                    System.out.println("Example not found for your entry: " + example_no);
+                    try {
+                        connection.close();
+                    } catch (Exception Ex) {
+                        System.out.println("Error connecting to database.  Machine Error: " +
+                                           Ex.toString());
+                    }
+                    break;
+            }
+            System.out.println();
+            System.out.println("Choose any one of the options: ");
+            System.out.println("8. New Customer Registration");
+            System.out.println("9. Updating share quotes for a day");
+            System.out.println("10. Add new mutual fund");
+            System.out.println("11. Update time and date");
+            System.out.println("12. Show Statistics");
+            System.out.println();
+            
+            example_no = keyboard.nextInt();
+            keyboard.nextLine();
         }
-        
     }
     
     public CS1555_Project(String login, int example_no) {
         
- 
+        
         switch ( example_no) {
             case 0:
             case 1:
@@ -102,8 +113,9 @@ public class CS1555_Project {
         
         statement = connection.createStatement();
         
-        String query;
+        //query;
         
+        input.nextLine();
         System.out.println("Enter Username");
         String login = input.nextLine();
         
@@ -113,23 +125,28 @@ public class CS1555_Project {
         prepStatement = connection.prepareStatement(query);
         prepStatement.setString(1,login);
         resultSet = prepStatement.executeQuery();
+        System.out.println("FIRST");
         
-        if(resultSet.getString(1).equals(login)){
-            System.out.println("Customer username already in use");
-            return;
+        if(resultSet.next()) {
+            
+            System.out.println("SECOND");
+            
+            if (resultSet.getString(1).equals(login)) {
+                System.out.println("Customer username already in use");
+                return;
+            }
+            
+            System.out.println("THIRD");
+            query = "select * from ADMINISTRATOR where login = ?";
+            
+            prepStatement = connection.prepareStatement(query);
+            prepStatement.setString(1, login);
+            resultSet = prepStatement.executeQuery();
+            if (resultSet.getString(1).equals(login)) {
+                System.out.println("Admin username already in use");
+                return;
+            }
         }
-        
-        query = "select * from ADMINISTRATOR where login = ?";
-        
-        prepStatement = connection.prepareStatement(query);
-        prepStatement.setString(1,login);
-        resultSet = prepStatement.executeQuery();
-        
-        if(resultSet.getString(1).equals(login)){
-            System.out.println("Admin username already in use");
-            return;
-        }
-        
         
         
         System.out.println("Enter a name");
@@ -162,7 +179,7 @@ public class CS1555_Project {
             prepStatement.setString(4, address);
             prepStatement.setString(5, password);
             prepStatement.executeUpdate();
-            
+            System.out.println("Entered into ADMIN");
             
         }else{
             //Customer
@@ -176,13 +193,16 @@ public class CS1555_Project {
             prepStatement.setString(5, password);
             prepStatement.setFloat(6, balance);
             prepStatement.executeUpdate();
+            System.out.println("Entered into CUSTOMER");
             
         }
         
     }
     
+    
     public void stats(Scanner input) throws SQLException, ParseException {
         
+        input.nextLine();
         
         System.out.println("Enter the date you would like to start at as mm-dd-yyy");
         String date = input.nextLine();
@@ -228,12 +248,13 @@ public class CS1555_Project {
         connection.commit();
         
     }
-
+    
     
     public void updateTimeDate(Scanner input) throws SQLException, ParseException {
         
         //Enter date
         
+        input.nextLine();
         System.out.println("Enter the date as mm-dd-yyy");
         String date = input.nextLine();
         
@@ -252,9 +273,10 @@ public class CS1555_Project {
         
     }
     
-
+    
     public void addMutualFund(Scanner input) throws SQLException,ParseException{
         
+        input.nextLine();
         System.out.println("Enter a symbol");
         String symbol = input.nextLine();
         
@@ -271,7 +293,7 @@ public class CS1555_Project {
         String date = input.nextLine();
         
         
-        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm-dd-yyyy");
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MM-dd-yyyy");
         java.sql.Date date_reg = new java.sql.Date (df.parse(date).getTime());
         
         query = "insert into MUTUALFUND values (?,?,?,?,?)";
@@ -300,17 +322,19 @@ public class CS1555_Project {
         
         connection.commit();
     }
-
+    
+    
     
     public void updateShareQuotes(Scanner input) throws SQLException, ParseException {
         
         
+        input.nextLine();
         System.out.println("Enter the date as: mm-dd-yyyy");
         String date = input.nextLine();
         
         query = "select symbol,price from CLOSINGPRICE where p_date = ?";
         
-        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm-dd-yyyy");
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("MM-dd-yyyy");
         java.sql.Date date_reg = new java.sql.Date (df.parse(date).getTime());
         
         
@@ -338,10 +362,11 @@ public class CS1555_Project {
             prepStatement.executeUpdate();
             
         }
+        System.out.println("Share Quotes Updated");
         
         connection.commit();
     }
-
+    
     
     public void buyShare(String in){
         System.out.println("helloooooo111");
@@ -425,10 +450,7 @@ public class CS1555_Project {
         }catch(Exception Ex) {
             System.out.println("Error running the sample queries.  Machine Error: " +
                                Ex.toString());
-        } /**catch (ParseException e) {
-           System.out.println("Error parsing the date. Machine Error: " +
-           e.toString());
-           }*/
+        }
         finally{
             try {
                 if (statement != null) statement.close();
@@ -708,8 +730,11 @@ public class CS1555_Project {
         int mainChoice = keyboard.nextInt();
         int choice = 0, c = 0;
         String login = "",  temp1 = "",  temp2 = "";
+        int adminNEW = 0;
         
         if(mainChoice == 0){
+            adminNEW = 1;
+            c = 0;
             //show administrator login
             System.out.println("Login: ");
             keyboard.nextLine();
@@ -724,9 +749,12 @@ public class CS1555_Project {
             System.out.println("12. Show Statistics");
             System.out.println();
             
-            c = keyboard.nextInt();
+            choice = keyboard.nextInt();
+            System.out.println("admin: " + choice);
+
             
         }else if(mainChoice == 1){
+            adminNEW = 0;
             //show customer login
             System.out.println("Login: ");
             keyboard.nextLine();
@@ -742,6 +770,7 @@ public class CS1555_Project {
             System.out.println("6. Changing the allocation preference");
             System.out.println("7. Customer portofolio");
             
+            c = 0;
             c = keyboard.nextInt();
             
             
@@ -827,15 +856,28 @@ public class CS1555_Project {
             //create a connection to DB on class3.cs.pitt.edu
             connection = DriverManager.getConnection(url, username, password);
             
-            if(c == 0 || c == 6 || c == 5 || c == 7 || c == 4){
-                System.out.println("c: " + c);
-                CS1555_Project demo = new CS1555_Project(login,choice);
-            }else if(c ==1 ){
-                CS1555_Project demo = new CS1555_Project(login,temp1, temp2);
+            if(adminNEW == 0){
+                if(c == 0 || c == 6 || c == 5 || c == 7 || c == 4){
+                    System.out.println("c: " + c);
+                    CS1555_Project demo = new CS1555_Project(login,choice);
+                }else if(c ==1 ){
+                    CS1555_Project demo = new CS1555_Project(login,temp1, temp2);
+                    
+                }
+                else{
+                    System.out.println("Invalid!!!");
+                }
+            }else if (adminNEW == 1){
+                System.out.println("hereeee " + c);
                 
-            }
-            else{
-                System.out.println("Invalid!!!");
+                if(c == 0 ){
+                    CS1555_Project demo = new CS1555_Project(keyboard,login,choice);
+                }else if(c ==1 ){
+                    CS1555_Project demo = new CS1555_Project(login,temp1, temp2);
+                    
+                }else{
+                    System.out.println("Invalid!!!");
+                }
             }
             connection.close();
             
