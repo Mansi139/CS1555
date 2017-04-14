@@ -165,6 +165,13 @@ end;
 /	
 commit;
 
+create or replace view FUNDSBOUGHT as
+select symbol, category, num_shares, t_date
+from TRXLOG
+NATURAL JOIN
+MUTUALFUND
+where action = 'buy';
+
 create or replace procedure myproc(alc int, blc float)  is
 	percentage float;
 	symbol varchar2(20);
