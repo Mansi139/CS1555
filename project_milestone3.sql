@@ -123,20 +123,26 @@ END;
 /
 
 --sell share
-create or replace procedure sellShare(comingLogin in varchar2, mutualFund in varchar2, numShares in number)
+create or replace procedure sellShareProc(comingLogin in varchar2, mutualFund in varchar2, numShares in number)
 is
 myShares number;
 mySharePrice number;
 begin
+	dbms_output.put_line ('balance is too low');
 	select shares INTO myShares from  OWNS where login=comingLogin and symbol = mutualFund;
 	dbms_output.put_line('share' || myShares);
 	select price into mySharePrice from closingPrice where symbol=mutualFund order by p_date DESC fetch first 1 row only;
-	if(myShares >= numShares) then
-		update OWNS set shares = myShares - numShares where login = comingLogin and symbol=mututalFund;
-		update customer set balance = balance + (mySharePrice)*(numberOfShares) where login = comingLogin;
-	else
-	dbms_output.put_line('balance is too low');
+	if myShares >= numShares then
+		dbms_output.put_line('balance is too low ' || myShares);
+		update OWNS set shares = myShares - numShares where login = comingLogin and symbol=mutualFund;
+		update customer set balance = balance + (mySharePrice)*(numShares) where login = comingLogin;
 	end if;
+	--if myShares >= numShares then
+		--update OWNS set shares = (myShares - numShares) where login = comingLogin and symbol=mutualFund;
+		--update customer set balance = balance + (mySharePrice)*(numberOfShares) where login = comingLogin;
+	--else
+		--dbms_output.put_line('balance is too low');
+	--end if; 
 end;
 /
 commit;
@@ -146,20 +152,37 @@ commit;
 --2) buy whole number of shares, get totalBalance/price of share = number of share we can buy
 --3) update balance, update OWNS shares
 --t. If the balance is not sufficient to buy all the shares, no share is bought
+
 create or replace procedure buyShare( comingLogin in varchar2, mutualFund in varchar2, numberOfShares in number)
 is
 mybalance number;
 mySharePrice number;
 begin
 	dbms_output.put_line('hello');
-	select balance into mybalance from customer where login=comingLogin;
-	select price into mySharePrice from closingPrice where symbol=mutualFund order by p_date DESC fetch first 1 row only;
-	if (mybalance >= (mySharePrice)*(numberOfShares)) then
-		update OWNS set shares = shares + numberOfShares where login = comingLogin;
-		update customer set balance = balance - (mySharePrice)*(numberOfShares) where login = comingLogin;
+	select balance 
+	into mybalance 
+	from customer 
+	where login=comingLogin;
+	
+	select price 
+	into mySharePrice 
+	from closingPrice 
+	where symbol=mutualFund 
+	order by p_date DESC 
+	fetch first 1 row only;
+	
+	if mybalance >= (mySharePrice)*(numberOfShares) then
+		dbms_output.put_line('mybalance: ' || mybalance);
+		update OWNS 
+		set shares = shares + numberOfShares 
+		where login = comingLogin;
+		
+		update customer 
+		set balance = balance - (mySharePrice)*(numberOfShares) 
+		where login = comingLogin;
 	else
-	dbms_output.put_line('balance is too low');
-	end if;
+		dbms_output.put_line('balance is too low');
+	end if; 
 end;
 /	
 commit;
@@ -171,20 +194,38 @@ is
 mybalance number;
 mySharePrice number;
 numShare number;
+newShares number;
 begin
-	dbms_output.put_line('hello');
-	select balance into mybalance from customer where login=comingLogin;
-	select price into mySharePrice from closingPrice where symbol=mutualFund order by p_date DESC fetch first 1 row only;
-	if(mybalance > amountToBeUsed) then
-		if (mybalance >= (mySharePrice)*(amountToBeUsed/mySharePrice)) then
-			update OWNS set shares = shares + (mybalance/mySharePrice) where login = comingLogin;
-			update customer set balance = balance - (mySharePrice)*(amountToBeUsed/mySharePrice) where login = comingLogin;
+	select balance 
+	into mybalance 
+	from customer 
+	where login=comingLogin;
+	
+	select price 
+	into mySharePrice 
+	from closingPrice 
+	where symbol=mutualFund 
+	order by p_date DESC 
+	fetch first 1 row only;
+	
+	newShares := floor((amountToBeUsed/mySharePrice));
+		
+	if mybalance > amountToBeUsed then
+		if mybalance >= mySharePrice*newShares then
+			update OWNS 
+			set shares = shares + newShares 
+			where login = comingLogin;
+			
+			update customer 
+			set balance = balance - (mySharePrice)*newShares
+			where login = comingLogin;
 		else
-		dbms_output.put_line('balance is too low');
+			dbms_output.put_line('balance is too low');
 		end if;
 	end if;
 end;
-/	
+/
+show errors;	
 commit;
 
 create or replace procedure myproc(alc int, blc float)  is
@@ -230,15 +271,16 @@ select symbol, category, num_shares, t_date
 from TRXLOG natural join MUTUALFUND
 where action = 'buy';
 	
-	
-create or replace procedure investingMyproc(alc in int, blc in float, loginIn in varchar2, outVar OUT int )  is
+create or replace procedure investingMyproc(alc in int, blc in float, loginIn in varchar2, updateDate in date )  is
 	percentage float;
 	mySymbol varchar2(20);
 	price float;
 	totalMoney float;
 	mySharePrice float;
 	newBalance float; 
-	flag int; 
+	flag int ; 
+	newShares int; 
+	
 	--if flag == 0 that means we have enough money to spend in shares, flag = 1 means no BUY transaction should happn
 	cursor get_percentage is
 		select percentage,symbol 
@@ -247,63 +289,98 @@ create or replace procedure investingMyproc(alc in int, blc in float, loginIn in
 		
 	begin
 		open get_percentage;
+		flag := 0;
 		loop
+			dbms_output.put_line('Entering loop');
 			fetch get_percentage into percentage,mySymbol;	
 			--here's we can start finding out how much money it's going to cost us to buy that shares 
 			exit when get_percentage%notfound;
-			select price into mySharePrice from closingPrice where symbol=mySymbol;  --CHANGE IT TO GET LATEST PRICE
+			
+			dbms_output.put_line('middle loop: ' || mySymbol);
+			select price
+			into mySharePrice 
+			from closingPrice 
+			where symbol=mySymbol
+			and p_date <= updateDate 
+			fetch first 1 row only;  
+			
+			dbms_output.put_line('middle loop 2');
 			--customer's deposit amount = 100, percentage = 0.5 for this share, then we need to spend 50
 			--customer's deposit amount 20, percentage = 0.5
 			--(blc*percentage)/100 
-			newBalance := (blc*percentage)/100;
+			newBalance := (blc*percentage);
+			
+			
+			dbms_output.put_line('new balance: ' || newBalance );
 			
 			IF newBalance >= (mySharePrice) THEN
-				flag := 0;
+				if flag = 1 then
+					flag := 1;
+				else
+					flag := 0;
+				end if;
+				dbms_output.put_line('flag 1:' || flag);
 			ELSE 
 				flag := 1;
+				dbms_output.put_line('flag 2: ' || flag); 
 			END IF;
 
+			
 			dbms_output.put_line(percentage);
 		end loop;
-		--close get_percentage;
+		close get_percentage;
 
 
-/**
-	IF flag <= 0 THEN
+
+	IF flag = 0 THEN
 		open get_percentage;
                 loop
-                        fetch get_percentage into percentage,mySymbol;
-                        --here's we can start finding out how much money it's going to cost us to buy that shares
-                        exit when get_percentage%notfound;
-                        select price into mySharePrice from closingPrice where symbol=mySymbol;  --CHANGE IT TO GET LATEST PRICE
+                        fetch get_percentage into percentage,mySymbol;	
+			exit when get_percentage%notfound;
+                        
+                        dbms_output.put_line('middle loop: ' || mySymbol);
+			select price
+			into mySharePrice 
+			from closingPrice 
+			where symbol=mySymbol
+			and p_date <= updateDate 
+			fetch first 1 row only;  
+			
+			dbms_output.put_line('Buying for: ' || mySharePrice);
+			
                         --customer's deposit amount = 100, percentage = 0.5 for this share, then we need to spend 50
                         --customer's deposit amount 20, percentage = 0.5
                         --(blc*percentage)/100
-                        newBalance := (blc*percentage)/100;
+                        newBalance := (blc*percentage);
+                        newShares := floor((newBalance/mySharePrice));
+                        
+                         dbms_output.put_line('new balance: ' || newBalance);
+                        dbms_output.put_line('new shares: ' || newShares);
 
                         IF newBalance >= (mySharePrice) THEN
-				update OWNS set shares = shares + 1  where login := loginIN;
-                		update customer set balance = balance - (mySharePrice)  where login := loginIN;
-
-
+				update OWNS 
+				set shares = shares +  newShares
+				where login = loginIN
+				and symbol = mySymbol;
+                		
+                		update customer 
+                		set balance = balance - (newShares*mySharePrice)  
+                		where login = loginIN;
                         ELSE
+                        	dbms_output.put_line('Not enough balance');
                         END IF;
 
                         dbms_output.put_line(percentage);
                 end loop;
                 close get_percentage;
-		--update OWNS set shares = shares + numberOfShares where login = comingLogin;
-        	--update customer set balance = balance - (mySharePrice)*(numberOfShares) where login = comingLogin;
-		dbms_output.put_line(flag);
-	else if flag >= 1 THEN
 		
+	ELSIF flag <> 1 THEN
+		 dbms_output.put_line('Flag is 1');
 	END IF;
-*/
-	close get_percentage;
-
 	end;
 
 	/
+show errors;
 
 commit;	
 
@@ -323,7 +400,8 @@ create or replace trigger investing
 	alloNo int;
      	mybalance float;
 	flag int;
-	outputValue int;    	
+	outputValue int;    
+	updateDate date;	
 begin
     	select allocation_no
 	into alloNo
@@ -332,22 +410,20 @@ begin
 	dbms_output.put_line('allocation no: ' || alloNo);
 
 	--not customers balance, we need the amount we are depositing
-	select amount 
-	into mybalance
+	select amount, t_date  
+	into mybalance, updateDate
 	from TRXLOG T
 	where T.login = :new.login;
-	--dbms_output.put_line('balance of customer: ' || mybalance);	
+	dbms_output.put_line('balance of customer: ' || mybalance);	
 	
-	--pass that amount
-	investingMyproc(alloNo,mybalance, :new.login, outputValue);
-	dbms_output.put_line('outPutvalue: ' || outputValue);
+	dbms_output.put_line('date ' || updateDate);	
+	
+	investingMyproc(alloNo,mybalance, :new.login, updateDate);
 
-    	
-    	/**buyShare( :new.login, mutualFund in varchar2, numberOfShares in varchar2) */
-	--myproc(no,mybalance);
 
 	end;
     /	
+ show errors;
 commit;
 
 --this should only go to closing price and find out the price of the share (LATEST PRICE) and update the balance param

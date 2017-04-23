@@ -1018,9 +1018,9 @@ public class CS1555_Project {
 }
 
 /** TODO:
- 1) Customer portflio : //how to get The cost value of a stock is the total amount paid to purchase the shares?
- 3) Investign triggers finvest
- 4) buyShare and buyShare2 exception when running procedures.
+ 3) Customer portflio : //how to get The cost value of a stock is the total amount paid to purchase the shares?
+ 1) Investign triggers finvest
+ 2)
  5) conditional investment.
  6) I don't see my debug statementss
  */
