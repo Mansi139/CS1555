@@ -222,23 +222,20 @@ public class CS1555_Project {
         int k = input.nextInt();
         input.nextLine();
         
-        /*
-         query = "select * from (select category, sum(num_shares) from FUNDSBOUGHT ";
-         query += "where t_date >= ?  group by category order by sum(num_shares) desc)";
-         query += "where rownum <= ?";
-         
-         prepStatement = connection.prepareStatement(query);
-         prepStatement.setDate(1, date_reg);
-         prepStatement.setInt(2, k);
-         resultSet = prepStatement.executeQuery();
-         
-         System.out.println("\nHighest " + k + " Volume Categories");
-         System.out.printf("%-10S %-10S%n", "CATEGORY", "SHARES");
-         
-         while(resultSet.next()) {
-         System.out.printf("%-10s %-10S%n", resultSet.getString(1), resultSet.getInt(2));
-         }
-         */
+        query = "select * from (select category, sum(num_shares) from FUNDSBOUGHT where t_date >= ?  group by category order by sum(num_shares) desc)";
+        query += "where rownum <= ?";
+
+        prepStatement = connection.prepareStatement(query);
+        prepStatement.setDate(1, date_reg);
+        prepStatement.setInt(2, k);
+        resultSet = prepStatement.executeQuery();
+
+        System.out.println("The top highest " + k + " volume categories");
+
+        while(resultSet.next()) {
+            System.out.printf(resultSet.getString(1) + "\t" + resultSet.getInt(2));
+        }
+     
         query = "select * from (select login, sum(amount) from TRXLOG where action = 'buy' and t_date >= ? group by login order by sum(amount) desc)";
         query += "where rownum <= ?";
         
