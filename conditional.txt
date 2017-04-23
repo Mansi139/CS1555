@@ -1,0 +1,19 @@
+1) Price Condition Table
+		Create a table to store users price conditions
+		It should contain the following:
+			customer--login
+			price threshold
+			buy or sell
+			mutual fund
+			amount to buy or sell
+			(add other things if needed)
+
+2) Create Trigger
+		On update on the Closing Price table, check if the price threshold 
+		for the mutualFund is met (look at buy/sell to see if a number meets 
+		the threshold in the correct direction), then either buy/sell according to the 
+		PriceConditionTable. Delete corresponding row from Price Condition Table.
+
+3) Add Java
+		Add code to add rows to Price Condition table only if 
+		price condition isn't met when it's entered.
