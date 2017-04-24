@@ -11,27 +11,26 @@ INSERT INTO ADMINISTRATOR(login, name, email, address, password) values('admin',
 
 
 
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('MM', 'money-market', 'money market, conservative', 'fixed', '06-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('RE', 'real-estate', 'real estate', 'fixed', '09-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('STB', 'short-term-bonds', 'short term bonds', 'bonds', '10-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('LTB', 'long-term-bonds', 'long term bonds', 'bonds', '11-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('BBS', 'balance-bonds-stocks', 'balance bonds and stocks', 'mixed', '12-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('SRBS', 'social-respons-bonds-stocks', 'social responsibility bonds and stocks', 'mixed', '12-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('GS', 'general-stocks', 'general stocks', 'stocks', '16-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('AS', 'aggressive-stocks', 'aggressive stocks', 'stocks', '23-JAN-14');
-INSERT INTO MUTUALFUND(symbol, name, description, category, c_date) VALUES('IMS', 'international-markets-stock', 'international markets stock, risky', 'stocks', '30-JAN-14');
+INSERT INTO MutualFund values ('MM','money-market','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('RE',' real-estate ','  real estate ','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('STB',' short-term-bonds ','short term bondst','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('LTB',' long-term-bonds','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('BBS','balance-bonds-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('SRBC','social-respons-bonds-stock','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('GS',' general-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('AS',' aggressive-stocks','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO MutualFund values ('IMS',' international-markets-stock','monery market','fixed',TO_DATE('04-04-2014','MM-DD-YYYY'));
 
 INSERT INTO OWNS(login, symbol, shares) values('mike', 'RE', 50);
 
-INSERT INTO TRXLOG(trans_id, login, symbol, t_date, action, num_shares, price, amount) values(0, 'mike', NULL, '29-MAR-14', 'deposit', NULL, NULL, 1000);
-INSERT INTO TRXLOG(trans_id, login, symbol, t_date, action, num_shares, price, amount) values(1, 'mike', 'MM', '29-MAR-14', 'buy', 50, 10, 500);
-INSERT INTO TRXLOG(trans_id, login, symbol, t_date, action, num_shares, price, amount) values(2, 'mike', 'RE', '29-MAR-14', 'buy', 50, 10, 500);
-INSERT INTO TRXLOG(trans_id, login, symbol, t_date, action, num_shares, price, amount) values(3, 'mike', 'MM', '01-APR-14', 'sell', 50, 15, 750);
+INSERT INTO TRXLOG values(0,'mike',NULL,TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+INSERT INTO TRXLOG values(1,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+INSERT INTO TRXLOG values(2,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+INSERT INTO TRXLOG values(3,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
 
-
-INSERT INTO ALLOCATION(allocation_no, login, p_date) values(0, 'mike', '28-MAR-14');
-INSERT INTO ALLOCATION(allocation_no, login, p_date) values(1, 'mary', '29-MAR-14');
-INSERT INTO ALLOCATION(allocation_no, login, p_date) values(2, 'mike', '03-MAR-14');
+INSERT INTO Allocation values (0,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT INTO Allocation values (1,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
+INSERT into Allocation values (2,'mike',TO_DATE('04-04-2014','MM-DD-YYYY'));
 
 
 INSERT INTO PREFERS(allocation_no, symbol, percentage) values(0, 'MM', .5);
