@@ -470,8 +470,10 @@ insert into Owns values('mike','MM',10);
 
 --insert into TRXLOG values(0,'mike','MM',TO_DATE('03-23-2014','MM-DD-YYYY'),'deposit',NULL,NULL,1000);
 insert into TRXLOG values(1,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
-insert into TRXLOG values(2,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
-insert into TRXLOG values(3,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',NULL,NULL,1000);
+insert into TRXLOG values(2,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',50,10,1000);
+insert into TRXLOG values(3,'mike','MM',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',50,15,1000);
+insert into TRXLOG values(4,'mike','RE',TO_DATE('04-04-2014','MM-DD-YYYY'),'buy',50,20,1000);
+
 
 
 insert into Allocation values (0,'mike',TO_DATE('03-28-2014','MM-DD-YYYY'));
